@@ -95,7 +95,7 @@ diff -up ./webapp/graphite/local_settings.py.example.orig ./webapp/graphite/loca
 -#CONF_DIR = '/opt/graphite/conf'
 -#STORAGE_DIR = '/opt/graphite/storage'
 -#CONTENT_DIR = '/opt/graphite/webapp/content'
-+CONF_DIR = '/etc/graphite-web'
++CONF_DIR = '/etc/webapps/graphite-web'
 +STORAGE_DIR = '/var/lib/graphite-web'
 +CONTENT_DIR = '/usr/share/graphite/webapp/content'
  
@@ -105,8 +105,8 @@ diff -up ./webapp/graphite/local_settings.py.example.orig ./webapp/graphite/loca
  ## Webapp config files
 -#DASHBOARD_CONF = '/opt/graphite/conf/dashboard.conf'
 -#GRAPHTEMPLATES_CONF = '/opt/graphite/conf/graphTemplates.conf'
-+#DASHBOARD_CONF = '/etc/graphite-web/dashboard.conf'
-+#GRAPHTEMPLATES_CONF = '/etc/graphite-web/graphTemplates.conf'
++#DASHBOARD_CONF = '/etc/webapps/graphite-web/dashboard.conf'
++#GRAPHTEMPLATES_CONF = '/etc/webapps/graphite-web/graphTemplates.conf'
  
  ## Data directories
  # NOTE: If any directory is unreadable in DATA_DIRS it will break metric browsing
