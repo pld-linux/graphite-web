@@ -1,7 +1,7 @@
 Summary:	A Django webapp for enterprise scalable realtime graphing
 Name:		graphite-web
 Version:	0.9.10
-Release:	0.2
+Release:	0.4
 License:	Apache v2.0
 Group:		Applications/WWW
 Source0:	https://github.com/downloads/graphite-project/graphite-web/%{name}-%{version}.tar.gz
@@ -69,7 +69,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}
 # Install some default configurations and wsgi
 install -Dp conf/dashboard.conf.example $RPM_BUILD_ROOT%{_sysconfdir}/dashboard.conf
 mv $RPM_BUILD_ROOT{%{py_sitescriptdir}/graphite/local_settings.py.example,%{_sysconfdir}/local_settings.py}
-touch $RPM_BUILD_ROOT%{_sysconfdir}/local_settings.py{c,o}
+touch $RPM_BUILD_ROOT%{py_sitescriptdir}/graphite/local_settings.py{c,o}
 install -Dp conf/graphite.wsgi.example $RPM_BUILD_ROOT%{_datadir}/graphite/%{name}.wsgi
 install -Dp %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 install -Dp %{SOURCE2} $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
@@ -106,12 +106,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dashboard.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/local_settings.py
-%ghost %{_sysconfdir}/local_settings.pyc
-%ghost %{_sysconfdir}/local_settings.pyo
 
 %dir %{py_sitescriptdir}/graphite
-%{py_sitescriptdir}/graphite/*.py[co]
+%{py_sitescriptdir}/graphite/[^l]*.py[co]
+%{py_sitescriptdir}/graphite/logger.py[co]
 %{py_sitescriptdir}/graphite/local_settings.py
+%ghost %{py_sitescriptdir}/graphite/local_settings.py[co]
 %attr(755,root,root) %{py_sitescriptdir}/graphite/manage.py
 %{py_sitescriptdir}/graphite/account
 %{py_sitescriptdir}/graphite/browser
