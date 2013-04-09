@@ -1,4 +1,3 @@
-diff -up ./check-dependencies.py.orig ./check-dependencies.py
 --- ./check-dependencies.py.orig	2012-05-31 00:28:54.000000000 -0600
 +++ ./check-dependencies.py	2012-11-24 14:09:50.040701191 -0700
 @@ -58,6 +58,19 @@ except:
@@ -21,7 +20,6 @@ diff -up ./check-dependencies.py.orig ./check-dependencies.py
  
  # Test for django-tagging
  try:
-diff -up ./conf/graphite.wsgi.example.orig ./conf/graphite.wsgi.example
 --- ./conf/graphite.wsgi.example.orig	2012-05-31 00:28:54.000000000 -0600
 +++ ./conf/graphite.wsgi.example	2012-11-24 14:10:08.310633299 -0700
 @@ -1,5 +1,5 @@
@@ -31,7 +29,6 @@ diff -up ./conf/graphite.wsgi.example.orig ./conf/graphite.wsgi.example
  os.environ['DJANGO_SETTINGS_MODULE'] = 'graphite.settings'
  
  import django.core.handlers.wsgi
-diff -up ./MANIFEST.in.orig ./MANIFEST.in
 --- ./MANIFEST.in.orig	2012-05-31 00:28:54.000000000 -0600
 +++ ./MANIFEST.in	2012-11-24 14:09:50.039701194 -0700
 @@ -5,7 +5,6 @@ include check-dependencies.py
@@ -42,7 +39,6 @@ diff -up ./MANIFEST.in.orig ./MANIFEST.in
  recursive-include distro/ *
  recursive-include webapp/graphite/ *.html
  recursive-include webapp/content/ *
-diff -up ./setup.cfg.orig ./setup.cfg
 --- ./setup.cfg.orig	2012-11-24 14:09:51.776694909 -0700
 +++ ./setup.cfg	2012-11-24 14:10:08.311633295 -0700
 @@ -1,6 +1,7 @@
@@ -55,7 +51,6 @@ diff -up ./setup.cfg.orig ./setup.cfg
  
  [bdist_rpm]
  requires = Django => 1.1.4
-diff -up ./setup.py.orig ./setup.py
 --- ./setup.py.orig	2012-11-24 14:09:51.776694909 -0700
 +++ ./setup.py	2012-11-24 14:10:08.312633291 -0700
 @@ -58,6 +58,7 @@ setup(
@@ -67,7 +62,6 @@ diff -up ./setup.py.orig ./setup.py
 +  data_files=webapp_content.items(),
    **setup_kwargs
  )
-diff -up ./webapp/graphite/cli/parser.py.orig ./webapp/graphite/cli/parser.py
 --- ./webapp/graphite/cli/parser.py.orig	2012-05-31 00:28:54.000000000 -0600
 +++ ./webapp/graphite/cli/parser.py	2012-11-24 14:09:51.777694906 -0700
 @@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -79,9 +73,8 @@ diff -up ./webapp/graphite/cli/parser.py.orig ./webapp/graphite/cli/parser.py
  
  grammar = Forward()
  
-diff -up ./webapp/graphite/local_settings.py.example.orig ./webapp/graphite/local_settings.py.example
---- ./webapp/graphite/local_settings.py.example.orig	2012-05-31 00:28:54.000000000 -0600
-+++ ./webapp/graphite/local_settings.py.example	2012-11-24 14:10:08.313633288 -0700
+--- ./webapp/graphite/local_settings.py.example	2012-11-24 14:10:08.313633288 -0700
++++ graphite-web-0.9.10/webapp/graphite/local_settings.py.example	2013-04-09 23:56:35.520679534 +0300
 @@ -43,29 +43,29 @@
  #####################################
  # Change only GRAPHITE_ROOT if your install is merely shifted from /opt/graphite
@@ -123,7 +116,35 @@ diff -up ./webapp/graphite/local_settings.py.example.orig ./webapp/graphite/loca
  
  
  #####################################
-diff -up ./webapp/graphite/render/attime.py.orig ./webapp/graphite/render/attime.py
+@@ -138,17 +138,17 @@
+ #
+ # Users with Django 1.2 or greater should use the new dictionary
+ # specification as the old database specification style is removed in 1.4
+-#DATABASES = {
+-#    'default': {
+-#        'NAME': '/opt/graphite/storage/graphite.db',
+-#        'ENGINE': 'django.db.backends.sqlite3',
+-#        'USER': '',
+-#        'PASSWORD': '',
+-#        'HOST': '',
+-#        'PORT': ''
+-#    }
+-#}
+-#
++DATABASES = {
++    'default': {
++        'NAME': '/var/lib/graphie-web/graphite.db',
++        'ENGINE': 'django.db.backends.sqlite3',
++        'USER': '',
++        'PASSWORD': '',
++        'HOST': '',
++        'PORT': ''
++    }
++}
++
+ # Users still on Django 1.1 must use the old method instead:
+ #DATABASE_ENGINE = 'django.db.backends.mysql'
+ #DATABASE_NAME = 'graphite'      # Or path to the database file if using sqlite3
 --- ./webapp/graphite/render/attime.py.orig	2012-05-31 00:28:54.000000000 -0600
 +++ ./webapp/graphite/render/attime.py	2012-11-24 14:09:51.777694906 -0700
 @@ -16,11 +16,7 @@ from datetime import datetime,timedelta
@@ -139,7 +160,6 @@ diff -up ./webapp/graphite/render/attime.py.orig ./webapp/graphite/render/attime
  
  months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
  weekdays = ['sun','mon','tue','wed','thu','fri','sat']
-diff -up ./webapp/graphite/render/glyph.py.orig ./webapp/graphite/render/glyph.py
 --- ./webapp/graphite/render/glyph.py.orig	2012-05-31 00:28:54.000000000 -0600
 +++ ./webapp/graphite/render/glyph.py	2012-11-24 14:09:51.779694900 -0700
 @@ -22,10 +22,7 @@ from graphite.render.datalib import Time
@@ -154,7 +174,6 @@ diff -up ./webapp/graphite/render/glyph.py.orig ./webapp/graphite/render/glyph.p
  
  INFINITY = float('inf')
  
-diff -up ./webapp/graphite/render/grammar.py.orig ./webapp/graphite/render/grammar.py
 --- ./webapp/graphite/render/grammar.py.orig	2012-05-31 00:28:54.000000000 -0600
 +++ ./webapp/graphite/render/grammar.py	2012-11-24 14:09:51.779694900 -0700
 @@ -1,4 +1,4 @@
@@ -163,7 +182,6 @@ diff -up ./webapp/graphite/render/grammar.py.orig ./webapp/graphite/render/gramm
  
  ParserElement.enablePackrat()
  grammar = Forward()
-diff -up ./webapp/graphite/settings.py.orig ./webapp/graphite/settings.py
 --- ./webapp/graphite/settings.py.orig	2012-05-31 14:30:23.000000000 -0600
 +++ ./webapp/graphite/settings.py	2012-11-24 14:09:51.780694897 -0700
 @@ -31,7 +31,6 @@ JAVASCRIPT_DEBUG = False

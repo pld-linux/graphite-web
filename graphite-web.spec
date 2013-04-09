@@ -1,13 +1,13 @@
 Summary:	A Django webapp for enterprise scalable realtime graphing
 Name:		graphite-web
 Version:	0.9.10
-Release:	0.5
+Release:	0.8
 License:	Apache v2.0
 Group:		Applications/WWW
 Source0:	https://github.com/downloads/graphite-project/graphite-web/%{name}-%{version}.tar.gz
 Source1:	apache.conf
 Source2:	%{name}.logrotate
-Patch0:		%{name}-0.9.10-fhs-thirdparty.patch
+Patch0:		config.patch
 URL:		https://launchpad.net/graphite/
 BuildRequires:	python-devel
 BuildRequires:	rpm-pythonprov
