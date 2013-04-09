@@ -1,7 +1,7 @@
 Summary:	A Django webapp for enterprise scalable realtime graphing
 Name:		graphite-web
 Version:	0.9.10
-Release:	0.4
+Release:	0.5
 License:	Apache v2.0
 Group:		Applications/WWW
 Source0:	https://github.com/downloads/graphite-project/graphite-web/%{name}-%{version}.tar.gz
@@ -15,7 +15,7 @@ BuildRequires:	rpmbuild(macros) >= 1.658
 Requires:	apache-mod_wsgi
 Requires:	fonts-TTF-DejaVu
 Requires:	python-django
-Requires:	python-django_tagging
+Requires:	python-django_tagging >= 0.3
 Requires:	python-pycairo
 Requires:	python-pyparsing
 Requires:	python-pytz
