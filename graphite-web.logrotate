@@ -1,0 +1,8 @@
+/var/log/graphite-web/*.log {
+        rotate 7
+        missingok
+        notifempty
+        copytruncate
+        daily
+        compress
+}

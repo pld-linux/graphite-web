@@ -1,0 +1,185 @@
+diff -up ./check-dependencies.py.orig ./check-dependencies.py
+--- ./check-dependencies.py.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./check-dependencies.py	2012-11-24 14:09:50.040701191 -0700
+@@ -58,6 +58,19 @@ except:
+   django = None
+   fatal += 1
+ 
++# Test for pytz
++try:
++  import pytz
++except:
++  print "[FATAL] Unable to import the 'pytz' module, do you have pytz module installed for python %s?\n" % py_version
++  fatal += 1
++
++# Test for pyparsing
++try:
++  import pyparsing
++except:
++  print "[FATAL] Unable to import the 'pyparsing' module, do you have pyparsing module installed for python %s?\n" % py_version
++  fatal += 1
+ 
+ # Test for django-tagging
+ try:
+diff -up ./conf/graphite.wsgi.example.orig ./conf/graphite.wsgi.example
+--- ./conf/graphite.wsgi.example.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./conf/graphite.wsgi.example	2012-11-24 14:10:08.310633299 -0700
+@@ -1,5 +1,5 @@
+ import os, sys
+-sys.path.append('/opt/graphite/webapp')
++sys.path.append('/usr/share/graphite/webapp')
+ os.environ['DJANGO_SETTINGS_MODULE'] = 'graphite.settings'
+ 
+ import django.core.handlers.wsgi
+diff -up ./MANIFEST.in.orig ./MANIFEST.in
+--- ./MANIFEST.in.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./MANIFEST.in	2012-11-24 14:09:50.039701194 -0700
+@@ -5,7 +5,6 @@ include check-dependencies.py
+ include examples/*
+ include conf/*.example
+ include webapp/graphite/local_settings.py.example
+-include webapp/graphite/thirdparty/pytz/pytz-LICENSE.txt
+ recursive-include distro/ *
+ recursive-include webapp/graphite/ *.html
+ recursive-include webapp/content/ *
+diff -up ./setup.cfg.orig ./setup.cfg
+--- ./setup.cfg.orig	2012-11-24 14:09:51.776694909 -0700
++++ ./setup.cfg	2012-11-24 14:10:08.311633295 -0700
+@@ -1,6 +1,7 @@
+ [install]
+-prefix = /opt/graphite
+-install-lib = %(prefix)s/webapp
++#prefix = /opt/graphite
++#install-lib = %(prefix)s/webapp
++install-data = /usr/share/graphite
+ 
+ [bdist_rpm]
+ requires = Django => 1.1.4
+diff -up ./setup.py.orig ./setup.py
+--- ./setup.py.orig	2012-11-24 14:09:51.776694909 -0700
++++ ./setup.py	2012-11-24 14:10:08.312633291 -0700
+@@ -58,6 +58,7 @@ setup(
+   package_data={'graphite' :
+     ['templates/*', 'local_settings.py.example']},
+   scripts=glob('bin/*'),
+-  data_files=webapp_content.items() + storage_dirs + conf_files + examples,
++  #data_files=webapp_content.items() + storage_dirs + conf_files + examples,
++  data_files=webapp_content.items(),
+   **setup_kwargs
+ )
+diff -up ./webapp/graphite/cli/parser.py.orig ./webapp/graphite/cli/parser.py
+--- ./webapp/graphite/cli/parser.py.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./webapp/graphite/cli/parser.py	2012-11-24 14:09:51.777694906 -0700
+@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ See the License for the specific language governing permissions and
+ limitations under the License."""
+ 
+-from graphite.thirdparty.pyparsing import *
++from pyparsing import *
+ 
+ grammar = Forward()
+ 
+diff -up ./webapp/graphite/local_settings.py.example.orig ./webapp/graphite/local_settings.py.example
+--- ./webapp/graphite/local_settings.py.example.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./webapp/graphite/local_settings.py.example	2012-11-24 14:10:08.313633288 -0700
+@@ -43,29 +43,29 @@
+ #####################################
+ # Change only GRAPHITE_ROOT if your install is merely shifted from /opt/graphite
+ # to somewhere else
+-#GRAPHITE_ROOT = '/opt/graphite'
++GRAPHITE_ROOT = '/usr/share/graphite'
+ 
+ # Most installs done outside of a separate tree such as /opt/graphite will only
+ # need to change these three settings. Note that the default settings for each
+ # of these is relative to GRAPHITE_ROOT
+-#CONF_DIR = '/opt/graphite/conf'
+-#STORAGE_DIR = '/opt/graphite/storage'
+-#CONTENT_DIR = '/opt/graphite/webapp/content'
++CONF_DIR = '/etc/graphite-web'
++STORAGE_DIR = '/var/lib/graphite-web'
++CONTENT_DIR = '/usr/share/graphite/webapp/content'
+ 
+ # To further or fully customize the paths, modify the following. Note that the
+ # default settings for each of these are relative to CONF_DIR and STORAGE_DIR
+ #
+ ## Webapp config files
+-#DASHBOARD_CONF = '/opt/graphite/conf/dashboard.conf'
+-#GRAPHTEMPLATES_CONF = '/opt/graphite/conf/graphTemplates.conf'
++#DASHBOARD_CONF = '/etc/graphite-web/dashboard.conf'
++#GRAPHTEMPLATES_CONF = '/etc/graphite-web/graphTemplates.conf'
+ 
+ ## Data directories
+ # NOTE: If any directory is unreadable in DATA_DIRS it will break metric browsing
+-#WHISPER_DIR = '/opt/graphite/storage/whisper'
+-#RRD_DIR = '/opt/graphite/storage/rrd'
+-#DATA_DIRS = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
+-#LOG_DIR = '/opt/graphite/storage/log/webapp'
+-#INDEX_FILE = '/opt/graphite/storage/index'  # Search index file
++WHISPER_DIR = '/var/lib/carbon/whisper/'
++RRD_DIR = '/var/lib/carbon/rrd'
++DATA_DIRS = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
++LOG_DIR = '/var/log/graphite-web/'
++INDEX_FILE = '/var/lib/graphite-web/index'  # Search index file
+ 
+ 
+ #####################################
+diff -up ./webapp/graphite/render/attime.py.orig ./webapp/graphite/render/attime.py
+--- ./webapp/graphite/render/attime.py.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./webapp/graphite/render/attime.py	2012-11-24 14:09:51.777694906 -0700
+@@ -16,11 +16,7 @@ from datetime import datetime,timedelta
+ from time import daylight
+ from django.conf import settings
+ 
+-try: # See if there is a system installation of pytz first
+-  import pytz
+-except ImportError: # Otherwise we fall back to Graphite's bundled version
+-  from graphite.thirdparty import pytz
+-
++import pytz
+ 
+ months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+ weekdays = ['sun','mon','tue','wed','thu','fri','sat']
+diff -up ./webapp/graphite/render/glyph.py.orig ./webapp/graphite/render/glyph.py
+--- ./webapp/graphite/render/glyph.py.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./webapp/graphite/render/glyph.py	2012-11-24 14:09:51.779694900 -0700
+@@ -22,10 +22,7 @@ from graphite.render.datalib import Time
+ from graphite.util import json
+ 
+ 
+-try: # See if there is a system installation of pytz first
+-  import pytz
+-except ImportError: # Otherwise we fall back to Graphite's bundled version
+-  from graphite.thirdparty import pytz
++import pytz
+ 
+ INFINITY = float('inf')
+ 
+diff -up ./webapp/graphite/render/grammar.py.orig ./webapp/graphite/render/grammar.py
+--- ./webapp/graphite/render/grammar.py.orig	2012-05-31 00:28:54.000000000 -0600
++++ ./webapp/graphite/render/grammar.py	2012-11-24 14:09:51.779694900 -0700
+@@ -1,4 +1,4 @@
+-from graphite.thirdparty.pyparsing import *
++from pyparsing import *
+ 
+ ParserElement.enablePackrat()
+ grammar = Forward()
+diff -up ./webapp/graphite/settings.py.orig ./webapp/graphite/settings.py
+--- ./webapp/graphite/settings.py.orig	2012-05-31 14:30:23.000000000 -0600
++++ ./webapp/graphite/settings.py	2012-11-24 14:09:51.780694897 -0700
+@@ -31,7 +31,6 @@ JAVASCRIPT_DEBUG = False
+ WEB_DIR = dirname( abspath(__file__) )
+ WEBAPP_DIR = dirname(WEB_DIR)
+ GRAPHITE_ROOT = dirname(WEBAPP_DIR)
+-THIRDPARTY_DIR = join(WEB_DIR,'thirdparty')
+ # Initialize additional path variables
+ # Defaults for these are set after local_settings is imported
+ CONTENT_DIR = ''
+@@ -50,8 +49,6 @@ DATA_DIRS = []
+ CLUSTER_SERVERS = []
+ 
+ sys.path.insert(0, WEBAPP_DIR)
+-# Allow local versions of the libs shipped in thirdparty to take precedence
+-sys.path.append(THIRDPARTY_DIR)
+ 
+ # Memcache settings
+ MEMCACHE_HOSTS = []
