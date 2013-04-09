@@ -83,8 +83,9 @@ ln -s %{_sysconfdir}/local_settings.py $RPM_BUILD_ROOT%{py_sitescriptdir}/graphi
 # Don't ship bins that are not needed for prodcution
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/{build-index.sh,run-graphite-devel-server.py}
 
-# Fix permissions
-%{__chmod} 0755 $RPM_BUILD_ROOT%{py_sitescriptdir}/graphite/manage.py
+# Add graphite-manage to PATH for easy access
+install -d $RPM_BUILD_ROOT%{_sbindir}
+ln -s %{py_sitescriptdir}/graphite/manage.py $RPM_BUILD_ROOT%{_sbindir}/graphite-manage
 
 # Don't ship thirdparty
 rm -r $RPM_BUILD_ROOT%{py_sitescriptdir}/graphite/thirdparty
@@ -106,6 +107,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dashboard.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/local_settings.py
+%attr(755,root,root) %{_sbindir}/graphite-manage
 
 %dir %{py_sitescriptdir}/graphite
 %{py_sitescriptdir}/graphite/[^l]*.py[co]
