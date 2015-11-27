@@ -7,7 +7,8 @@ Group:		Applications/WWW
 Source0:	https://codeload.github.com/graphite-project/%{name}/tar.gz/%{version}
 Source1:	apache.conf
 Source2:	%{name}.logrotate
-Patch0:		config.patch
+Patch0:		%{name}-kill-thirdparty-modules.patch
+
 URL:		https://launchpad.net/graphite/
 BuildRequires:	rpm-pythonprov
 # for the py_build, py_install macros
@@ -46,10 +47,8 @@ and enterprise scalability.
 
 %prep
 %setup -q
-# Patch for Filesystem Hierarchy Standard
-# Remove thridparty libs
-# https://github.com/hggh/graphite-web-upstream/commit/47361a2707f904a8b817ca96deeddabcdbaaa534.patch
-# %patch0 -p1
+# Kill strict use of thidparty subdir copies of python modules
+%patch0 -p1
 
 %build
 %py_build %{?with_tests:test}  

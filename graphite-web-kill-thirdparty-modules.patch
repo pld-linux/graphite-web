@@ -1,0 +1,19 @@
+--- graphite-web-0.9.14/webapp/graphite/cli/parser.py.kill-thirdparty-modules	2015-11-27 14:50:24.160441928 +0100
++++ graphite-web-0.9.14/webapp/graphite/cli/parser.py	2015-11-27 14:50:52.621908582 +0100
+@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ See the License for the specific language governing permissions and
+ limitations under the License."""
+ 
+-from graphite.thirdparty.pyparsing import *
++from pyparsing import *
+ 
+ grammar = Forward()
+ 
+--- graphite-web-0.9.14/webapp/graphite/render/grammar.py.kill-thirdparty-modules	2015-11-27 14:46:01.016881826 +0100
++++ graphite-web-0.9.14/webapp/graphite/render/grammar.py	2015-11-27 14:46:17.001038841 +0100
+@@ -1,4 +1,4 @@
+-from graphite.thirdparty.pyparsing import *
++from pyparsing import *
+ 
+ ParserElement.enablePackrat()
+ grammar = Forward()
