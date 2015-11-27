@@ -1,17 +1,18 @@
 Summary:	A Django webapp for enterprise scalable realtime graphing
 Name:		graphite-web
-Version:	0.9.10
-Release:	0.9
+Version:	0.9.14
+Release:	0.2
 License:	Apache v2.0
 Group:		Applications/WWW
-Source0:	https://github.com/downloads/graphite-project/graphite-web/%{name}-%{version}.tar.gz
+Source0:	https://codeload.github.com/graphite-project/%{name}/tar.gz/%{version}
 Source1:	apache.conf
 Source2:	%{name}.logrotate
 Patch0:		config.patch
 URL:		https://launchpad.net/graphite/
-BuildRequires:	python-devel
 BuildRequires:	rpm-pythonprov
-BuildRequires:	rpmbuild(macros) >= 1.658
+# for the py_build, py_install macros
+BuildRequires:	rpmbuild(macros) >= 1.710
+BuildRequires:	python-devel
 Requires:	apache-mod_wsgi
 Requires:	fonts-TTF-DejaVu
 Requires:	python-django
@@ -48,17 +49,19 @@ and enterprise scalability.
 # Patch for Filesystem Hierarchy Standard
 # Remove thridparty libs
 # https://github.com/hggh/graphite-web-upstream/commit/47361a2707f904a8b817ca96deeddabcdbaaa534.patch
-%patch0 -p1
+# %patch0 -p1
 
 %build
-%{__python} setup.py build
+%py_build %{?with_tests:test}  
+  
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install \
-	--skip-build \
-	--optimize=2 \
-	--root=$RPM_BUILD_ROOT
+# http://graphite.readthedocs.org/en/latest/install-source.html#installing-in-the-default-location
+%py_install   \
+  --prefix /usr  \
+  --install-lib %{py_sitescriptdir}   \
+  --install-data %{_datadir}/graphite
 
 %py_postclean -x manage.py
 
@@ -122,11 +125,11 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitescriptdir}/graphite/composer
 %{py_sitescriptdir}/graphite/dashboard
 %{py_sitescriptdir}/graphite/events
-%{py_sitescriptdir}/graphite/graphlot
 %{py_sitescriptdir}/graphite/metrics
 %{py_sitescriptdir}/graphite/render
 %{py_sitescriptdir}/graphite/templates
 %{py_sitescriptdir}/graphite/version
+%{py_sitescriptdir}/graphite/url_shortener
 %{py_sitescriptdir}/graphite/whitelist
 %{py_sitescriptdir}/graphite_web-%{version}-py*.egg-info
 
