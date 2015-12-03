@@ -1,37 +1,39 @@
+# TODO:
+# - Test it.
 # NOTE:
 # - consider split sqlite and apache to separate packages? Or only suggest them?
 
 Summary:	A Django webapp for enterprise scalable realtime graphing
 Name:		graphite-web
 Version:	0.9.14
-Release:	0.3
+Release:	1
 License:	Apache v2.0
 Group:		Applications/WWW
-Source0:	https://codeload.github.com/graphite-project/%{name}/tar.gz/%{version}
+Source0:	https://codeload.github.com/graphite-project/graphite-web/tar.gz/%{version}
 Source1:	apache.conf
 Source2:	%{name}.logrotate
-Source3:	local_settings.py  
+Source3:	local_settings.py
 Patch0:		%{name}-kill-thirdparty-modules.patch
 
 URL:		https://launchpad.net/graphite/
 BuildRequires:	rpm-pythonprov
 # for the py_build, py_install macros
-BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	python-devel
-Requires:	apache-mod_wsgi
-Requires:	apache-mod_log_config 
+BuildRequires:	rpmbuild(macros) >= 1.710
 Requires:	apache-mod_alias
 Requires:	apache-mod_authz_host
+Requires:	apache-mod_log_config
+Requires:	apache-mod_wsgi
 
 Requires:	fonts-TTF-DejaVu
 Requires:	python-django
 Requires:	python-django_tagging >= 0.3
+Requires:	python-modules-sqlite
 Requires:	python-pycairo
 Requires:	python-pyparsing
 Requires:	python-pytz
 Requires:	python-simplejson
 Requires:	python-whisper >= %{version}
-Requires:	python-modules-sqlite
 
 Requires:	webapps
 Conflicts:	logrotate < 3.8.0
@@ -61,14 +63,14 @@ and enterprise scalability.
 %patch0 -p1
 
 %build
-%py_build %{?with_tests:test}  
-  
+%py_build %{?with_tests:test}
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
 # http://graphite.readthedocs.org/en/latest/install-source.html#installing-in-the-default-location
 %py_install   \
-  --prefix /usr  \
+--prefix %{_prefix} \
   --install-lib %{py_sitescriptdir}   \
   --install-data %{_datadir}/graphite
 
@@ -105,6 +107,9 @@ ln -s %{py_sitescriptdir}/graphite/manage.py $RPM_BUILD_ROOT%{_sbindir}/graphite
 # Don't ship thirdparty
 rm -r $RPM_BUILD_ROOT%{py_sitescriptdir}/graphite/thirdparty
 
+# Install django/httpd accessible DB
+touch $RPM_BUILD_ROOT/var/lib/graphite-web/graphite.db
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -118,7 +123,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc conf/* examples/*
 %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/%{name}
-%dir %attr(750,root,http) %{_sysconfdir}
+## %dir %attr(750,root,http) %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dashboard.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/local_settings.py
@@ -150,3 +155,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %attr(775,root,http) %dir %{_localstatedir}/log/%{name}
 %attr(775,root,http) %dir %{_sharedstatedir}/%{name}
+%attr(640,http,http) %config(noreplace) %verify(not md5 mtime size) /var/lib/graphite-web/graphite.db
