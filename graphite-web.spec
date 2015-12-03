@@ -1,3 +1,6 @@
+# NOTE:
+# - consider split sqlite and apache to separate packages? Or only suggest them?
+
 Summary:	A Django webapp for enterprise scalable realtime graphing
 Name:		graphite-web
 Version:	0.9.14
@@ -7,6 +10,7 @@ Group:		Applications/WWW
 Source0:	https://codeload.github.com/graphite-project/%{name}/tar.gz/%{version}
 Source1:	apache.conf
 Source2:	%{name}.logrotate
+Source3:	local_settings.py  
 Patch0:		%{name}-kill-thirdparty-modules.patch
 
 URL:		https://launchpad.net/graphite/
@@ -15,6 +19,10 @@ BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	python-devel
 Requires:	apache-mod_wsgi
+Requires:	apache-mod_log_config 
+Requires:	apache-mod_alias
+Requires:	apache-mod_authz_host
+
 Requires:	fonts-TTF-DejaVu
 Requires:	python-django
 Requires:	python-django_tagging >= 0.3
@@ -23,6 +31,8 @@ Requires:	python-pyparsing
 Requires:	python-pytz
 Requires:	python-simplejson
 Requires:	python-whisper >= %{version}
+Requires:	python-modules-sqlite
+
 Requires:	webapps
 Conflicts:	logrotate < 3.8.0
 BuildArch:	noarch
@@ -71,7 +81,9 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}
 
 # Install some default configurations and wsgi
 install -Dp conf/dashboard.conf.example $RPM_BUILD_ROOT%{_sysconfdir}/dashboard.conf
-mv $RPM_BUILD_ROOT{%{py_sitescriptdir}/graphite/local_settings.py.example,%{_sysconfdir}/local_settings.py}
+# mv $RPM_BUILD_ROOT{%{py_sitescriptdir}/graphite/local_settings.py.example,%{_sysconfdir}/local_settings.py}
+install -Dp %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/local_settings.py
+
 touch $RPM_BUILD_ROOT%{py_sitescriptdir}/graphite/local_settings.py{c,o}
 install -Dp conf/graphite.wsgi.example $RPM_BUILD_ROOT%{_datadir}/graphite/%{name}.wsgi
 install -Dp %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
